@@ -32,10 +32,13 @@ fi
 
 cat <<EOF > /etc/systemd/system/$projectName.service
 [Unit]
+
 Description=$projectName node service
 Wants=network-online.target
 After=network-online.target
+
 [Service]
+
 User=root
 Type=simple
 WorkingDirectory=$installPath/bin/
@@ -52,7 +55,9 @@ ExecStart=$installPath/bin/$projectName \
  --telemetry-url 'wss://telemetry-backend.w3f.community/submit 1'\
  --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0'\
  --wasm-execution Compiled
+ 
 [Install]
+
 WantedBy=multi-user.target
 EOF
 cd $installPath/source
