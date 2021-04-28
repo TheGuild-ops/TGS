@@ -9,7 +9,6 @@ mkdir $installPath/source
 mkdir $installPath/data
 mkdir $installPath/bin
 
-clear
 rm start
 if [ -s $installPath/data.json ]
 then
