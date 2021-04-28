@@ -1,4 +1,5 @@
 #!/bin/bash
+
 sudo su
 export installPath=$HOME/TGS
 export functionPath=https://raw.githubusercontent.com/TheGuild-ops/TGS/main/tool/function
