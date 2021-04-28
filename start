@@ -1,10 +1,14 @@
 #!/bin/bash
-
+sudo su
 export installPath=$HOME/TGS
+export functionPath=https://raw.githubusercontent.com/TheGuild-ops/TGS/main/tool/function
 export installPathTool=https://raw.githubusercontent.com/TheGuild-ops/TGS/main/tool/install
 
 mkdir $installPath
-sudo su
+mkdir $installPath/source
+mkdir $installPath/data
+mkdir $installPath/bun
+
 clear
 rm start
 if [ -s $installPath/data.json ]
