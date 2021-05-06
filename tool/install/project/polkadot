@@ -1,0 +1,75 @@
+#!/bin/bash
+
+projectName=polkadot
+projectChain=polkadot
+
+mkdir $installPath/data/$projectName/
+
+function portAssign {
+port=$((10000 + $RANDOM % 100000))
+if [  $(ss -lntu | grep -q $port) ]; then
+ echo $port
+ portAssign
+else
+echo $port
+fi
+}
+
+projectWsPort=$(curl $functionPath/generatePort | bash)
+projectPort=$(curl $functionPath/generatePort | bash)
+projectRpcPort=$(curl $functionPath/generatePort | bash)
+if [  $projectWsPort==$projectPort ]; then
+: $((projectWsPort = $projectWsPort + 1))
+fi
+
+if [  $projectWsPort==$projectRpcPort ]; then
+: $((projectWsPort = $projectWsPort + 1))
+fi
+
+if [  $projectPort==$projectRpcPort ]; then
+: $((projectPort = $projectPort + 1))
+fi
+
+cat <<EOF > /etc/systemd/system/$projectName.service
+[Unit]
+Description=$projectName node service
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=root
+Type=simple
+WorkingDirectory=$installPath/bin/
+Restart=always
+RestartSec=10
+ExecStart=$installPath/bin/$projectName \
+ --chain $projectChain \
+ --validator \
+ --port=$projectPort \
+ --ws-port=$projectWsPort \
+ --rpc-port=$projectRpcPort \
+ --name $(cat $installPath/data.json | jq ".[0].name") \
+ --base-path=$installPath/data/$projectName/ \
+ --telemetry-url 'wss://telemetry-backend.w3f.community/submit 1'\
+ --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0'\
+ --wasm-execution Compiled
+ 
+[Install]
+WantedBy=multi-user.target
+EOF
+cd $installPath/source
+git clone https://github.com/paritytech/polkadot.git
+cd polkadot
+git pull
+./scripts/init.sh
+cargo build --release
+systemctl stop kusama
+cp $installPath/source/polkadot/target/release/polkadot $installPath/bin/$projectName
+systemctl daemon-reload
+systemctl enable kusama
+systemctl start kusama
+ufw allow $projectPort
+ufw allow $projectWsPort
+ufw allow $projectRpcPort
+echo $(cat $installPath/data.json | jq '. + [{"projectName": "'$projectName'","status": "enable","projectChain": "'$projectChain'","projectWsPort": "'$projectWsPort'","projectPort": "'$projectPort'","projectRpcPort": "'$projectRpcPort'"}]') > $installPath/data.json 
+
+cat /etc/systemd/system/$projectName.service
