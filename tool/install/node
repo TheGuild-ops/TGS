@@ -17,7 +17,7 @@ while read response
     break
    ;;
    [1])
-    curl https://raw.githubusercontent.com/TheGuild-ops/TGS/main/tool/install/project/polkadot && bash node
+    curl https://raw.githubusercontent.com/TheGuild-ops/TGS/main/tool/install/project/polkadot | bash
     break
    ;;
    [2])
