@@ -62,11 +62,11 @@ cd polkadot
 git pull
 ./scripts/init.sh
 cargo build --release
-systemctl stop kusama
+systemctl stop $projectName
 cp $installPath/source/polkadot/target/release/polkadot $installPath/bin/$projectName
 systemctl daemon-reload
-systemctl enable kusama
-systemctl start kusama
+systemctl enable $projectName
+systemctl start $projectName
 ufw allow $projectPort
 ufw allow $projectWsPort
 ufw allow $projectRpcPort
